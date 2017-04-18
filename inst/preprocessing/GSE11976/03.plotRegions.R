@@ -2,13 +2,13 @@ library(R.utils)
 source("00.defineCopyNumberSegments.R")
 str(regDat)
 
-datI <- loadObject("CRL2324_dilutionSeries.xdr")
+datI <- readRDS("CRL2324_dilutionSeries.rds")
 datI$posMb <- datI$Position/1e6;
 ## Define genotypes
 
 
-pct <- c("100","79", "50", "34") 
-dataSet <- "CRL2324,BAF"
+pct <- c("100","79", "50", "34", "0") 
+dataSet <- "GSE11976,BAF"
 chipType <- "HumanCNV370v1"
 
 for(pp in pct){

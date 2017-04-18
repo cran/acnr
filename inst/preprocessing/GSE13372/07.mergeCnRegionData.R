@@ -1,18 +1,27 @@
-library("R.utils")
-sf <- system.file("preprocessing/GSE11976/01.defineCopyNumberSegments.R", package="acnr")
-source(sf)
-str(regDat)
+library("R.utils");
+
+dataSet <- "GSE13372"
+chipType <- "GenomeWideSNP_6"
+sampleName <- "HCC1143_GLEYSvsHCC1143BL_GLEYS"
+
+if (FALSE) {
+    ## Define CN regions
+    regFile <- "05.defineCopyNumberSegments.R"
+    pn <- file.path("preprocessing", dataSet, regFile)
+    sf <- system.file(pn, package="acnr")
+    source(sf)
+    str(regDat)
+}
 
 regPath <- "cnRegionData";
 regPath <- Arguments$getReadablePath(regPath);
 
-dataSet <- "GSE11976,BAF"
-chipType <- "HumanCNV370v1"
+ds <- sprintf("%s,ASCRMAv2", dataSet)
+chipType <- "GenomeWideSNP_6"
 
-path <- file.path(regPath, dataSet, chipType);
+path <- file.path(regPath, ds, chipType);
 path <- Arguments$getReadablePath(path);
 
-sampleName <- "CRL2324"
 pattern <- sprintf("%s,([0-9]+),\\(([0-9]),([0-9])\\).rds", sampleName)
 filenames <- list.files(path, pattern=pattern)
 pcts <- unique(gsub(pattern, "\\1", filenames))
@@ -21,13 +30,7 @@ savPath <- Arguments$getWritablePath("inst/extdata")
 
 types <- regDat[["type"]]
 datList <- list()
-
-toExclude <- c("23", "45", "47") ## tumorFractions to exclude (clear inconsistencies between reported fraction and experimental results, see Table 3 in Staaf (2008))
-
 for (pct in pcts) {
-    if (pct %in% toExclude) {
-        next;
-    }
     print(pct)
     pattern <- sprintf("%s,%s,(.*).rds", sampleName, pct)
     filenames <- list.files(path, pattern=pattern)
@@ -48,7 +51,7 @@ dat <- do.call("rbind", datList)
 rownames(dat) <- NULL
 str(dat)
 
-dsName <- "GSE11976_CRL2324"
+dsName <- "GSE13372_HCC1143"
 filename <- sprintf("%s.rds", dsName)
 pathname <- file.path(savPath, filename)
 saveRDS(dat, file=pathname)
